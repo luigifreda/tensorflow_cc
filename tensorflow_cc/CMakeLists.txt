@@ -1,13 +1,10 @@
 cmake_minimum_required(VERSION 3.7 FATAL_ERROR)
 cmake_policy(SET CMP0048 NEW)  # Enable version parameter in project().
 file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/PROJECT_VERSION" version)
-project(
-  "tensorflow_cc"
-  VERSION ${version}
-)
+project("tensorflow_cc" VERSION ${version})
 
 option(ALLOW_CUDA "Try to find and use CUDA." ON)
-option(REQUIRE_CUDA "Make sure to find and use CUDA (implies ALLOW_CUDA)." OFF)
+option(REQUIRE_CUDA "Make sure to find and use CUDA (implies ALLOW_CUDA)." ON)
 set(LOCAL_RAM_RESOURCES 4096 CACHE STRING "The amount of local RAM resources passed to bazel scheduler (e.g., 4096).")
 set(LOCAL_CPU_RESOURCES HOST_CPUS CACHE STRING "The amount of local CPU cores passed to bazel scheduler (e.g., 2).")
 set(TENSORFLOW_TAG "v${version}" CACHE STRING "The tensorflow release tag to be checked out (default v${version}).")
@@ -58,6 +55,7 @@ target_include_directories(
 target_link_libraries(
   tensorflow_cc INTERFACE
   "${CMAKE_INSTALL_PREFIX}/lib/libtensorflow_cc.so.${PROJECT_VERSION_MAJOR}"
+  #"${CMAKE_INSTALL_PREFIX}/lib/libtensorflow_framework.so.${PROJECT_VERSION_MAJOR}"  
   dl pthread
 )
 
@@ -100,6 +98,17 @@ install(
   DESTINATION lib
   FILES_MATCHING PATTERN "libtensorflow_cc.so*"
 )
+
+# install(
+#   DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/tensorflow/bazel-bin/tensorflow/"
+#   DESTINATION lib
+#   FILES_MATCHING PATTERN "libtensorflow_framework.so*"
+# )
+# install(
+#   DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/tensorflow/bazel-bin/bin/tensorflow/"
+#   DESTINATION lib
+#   FILES_MATCHING PATTERN "libtensorflow_framework.so*"
+# )
 
 # --------------------------
 # Install CMake targets file
