@@ -1,15 +1,15 @@
 # How To 
 
+
+## Check the tensorflow GPU compatibility table 
+
+https://www.tensorflow.org/install/source#gpu
+
 Worked version 
 CUDA: 11.6
 BAZEL_VERSION: 5.1.1 
 TENSORFLOW_VERSION: 2.9.0
-CUDNN: 8.2.1.32-1+cuda11.3
-
-## Check the tensorflow GPU compatibility table 
-
-https://www.tensorflow.org/install/source?hl=it#gpu
-
+CUDNN: 8.2.1.32-1+cuda11.3     <-- This is super important! Without this the GPU runtime will complain about the missing runtime compatibility 
 
 ## Install CUDA, CUDNN, TensorRT 
 
@@ -22,6 +22,24 @@ Set the tensorflow and bazel version in
 * BAZEL_VERSION -> Dockerfiles/BAZEL_VERSION    <-- 5.1.1 
 * TENSORFLOW_VERSION -> tensorflow_cc/PROJECT_VERSION <-- 2.9.0
 
+## Build and install 
+
+Use the script build.sh 
+```
+$ ./build.sh 
+```
+
+## Verify the installed libs and GPU is working
+
+Use the example folder 
+```
+cd example 
+mkdir build
+cd build 
+cmake ..
+make 
+```
+Run the two compiled examples. 
 
 # NOTES 
 
