@@ -18,6 +18,9 @@ CUDNN: 8.2.1.32-1+cuda11.3     <-- This is super important! Without this the GPU
 
 ## Configuration
 
+Set CUDA version in 
+* build.sh
+
 Set the tensorflow and bazel version in 
 * BAZEL_VERSION -> Dockerfiles/BAZEL_VERSION    <-- 5.1.1 
 * TENSORFLOW_VERSION -> tensorflow_cc/PROJECT_VERSION <-- 2.9.0
