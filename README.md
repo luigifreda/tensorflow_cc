@@ -1,5 +1,7 @@
 # tensorflow_cc v2.0
 
+Maintainer: [Luigi Freda](https://www.luigifreda.com)
+
 <!-- TOC -->
 
 - [tensorflow\_cc v2.0](#tensorflow_cc-v20)
@@ -44,7 +46,7 @@ My **current preferred working configuration** under Ubuntu 20.04:
      - `sudo apt install -y libcudnn8=8.6.0.163-1+cuda11.8`
     - `sudo apt install -y libcudnn8-dev=8.6.0.163-1+cuda11.8`
   
-I successfully built and deployed other **newer tensorflow configurations**. However, note that tensorflow does download and use its own custom versions of `Eigen` (and of other base libraries, according to the selected tensorflow version) and these library versions may not be the same installed in your system. This fact may cause severe problems (undefined behaviors and uncontrolled crashes) in your final target projects (where you want to import the built and deployed Tensorflow C++): In fact, you may be mixing libraries built with different versions of `Eigen` (so with different data alignments)!  
+I successfully built/deployed/tested other **newer tensorflow configurations** by using the new updated scripts/configurations (see the list below).
 
 #### CUDA, CUDNN, TensorRT 
 
@@ -77,6 +79,8 @@ Once you have properly set the configuration files, run
 ```
 $ ./build.sh 
 ```
+
+**Warning:** The build will take a long while (more than 2 hours). 
 
 **Warning:** Optimizations for Intel CPU are obtained by running `export CC_OPT_FLAGS="-march=native"`
 before the build. This command provides the best possible optimizations for your current CPU generation, but
@@ -117,10 +121,11 @@ At present, I didn't test the new scripts under docker yet. If you wish, you may
 
 With respect to the original repo, I had to remove the bazel option `--config=monolithic` since it brings some [troubles](https://github.com/tensorflow/tensorflow/issues/59081). In particular, I removed this option from the file `tensorflow_cc/cmake/build_tensorflow.sh.in`, which is used by cmake to generate the final configure and build script `tensorflow_cc/build/build_tensorflow.sh`. 
 
-Some other tested **working tensorflow configurations**: 
-  * tensorflow 2.13.0, bazel 5.3.0, cudnn 8.6.0
-  * tensorflow 2.14.0, bazel 6.1.0, cuda 8.9.7
-
+I successfully built and deployed other **newer tensorflow configurations** (see the list below). However, note that tensorflow does download and use its own custom versions of `Eigen` (and of other base libraries, according to the selected tensorflow version) and these library versions may not be the same installed in your system. This fact may cause severe problems (undefined behaviors and uncontrolled crashes) in your final target projects (where you want to import the built and deployed Tensorflow C++): In fact, you may be mixing libraries built with different versions of `Eigen` (so with different data alignments)!  
+Some tested **working tensorflow configurations**: 
+  * tensorflow 2.9.0, bazel 5.1.1, cudnn 8.6.0, cuda 11.6
+  * tensorflow 2.13.0, bazel 5.3.0, cudnn 8.6.0, cuda 11.8
+  * tensorflow 2.14.0, bazel 6.1.0, cuda 8.9.7, cuda 11.8
 
 
 ## Credits 
