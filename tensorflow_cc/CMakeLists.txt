@@ -3,13 +3,15 @@ cmake_policy(SET CMP0048 NEW)  # Enable version parameter in project().
 file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/PROJECT_VERSION" version)
 project("tensorflow_cc" VERSION ${version})
 
+set(CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard for building and linking the library (e.g., 14).")
+
 option(ALLOW_CUDA "Try to find and use CUDA." ON)
 option(REQUIRE_CUDA "Make sure to find and use CUDA (implies ALLOW_CUDA)." ON)
+option(INSTALL_PROTOBUF "Install protobuf compatible with tensorflow version." OFF) # Warning: If your program uses Protobuf and you encounter linkage or other problems, you can try -DINSTALL_PROTOBUF=ON option to install a Protobuf version matching the version bundled with TensorFlow. Our Dockerfiles are already built with the right version of Protobuf, so you may want to try your program in the Dockerfile first.
+
 set(LOCAL_RAM_RESOURCES 4096 CACHE STRING "The amount of local RAM resources passed to bazel scheduler (e.g., 4096).")
-set(LOCAL_CPU_RESOURCES 10 CACHE STRING "The amount of local CPU cores passed to bazel scheduler (e.g., 2).")
+set(LOCAL_CPU_RESOURCES 8 CACHE STRING "The amount of local CPU cores passed to bazel scheduler (e.g., 2).")
 set(TENSORFLOW_TAG "v${version}" CACHE STRING "The tensorflow release tag to be checked out (default v${version}).")
-option(INSTALL_PROTOBUF "Install protobuf compatible with tensorflow version." OFF)
-set(CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard for building and linking the library (e.g., 14).")
 
 # -------------
 # CMake Options

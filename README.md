@@ -1,114 +1,96 @@
-# tensorflow_cc
-[![Build Status](http://oak.floop.cz:8080/buildStatus/icon?job=tensorflow_cc)](http://oak.floop.cz:8080/job/tensorflow_cc/)
-[![TF version](https://img.shields.io/badge/TF%20version-2.9.0-brightgreen.svg)]()
+# tensorflow_cc v2.0
 
-This repository makes possible the usage of the [TensorFlow C++](https://www.tensorflow.org/api_docs/cc/) API from the outside of the TensorFlow source code folders and without the use of the [Bazel](https://bazel.build/) build system.
+<!-- TOC -->
 
-This repository contains two CMake projects. The [tensorflow_cc](tensorflow_cc) project downloads, builds and installs the TensorFlow C++ API into the operating system and the [example](example) project demonstrates its simple usage.
+- [tensorflow\_cc v2.0](#tensorflow_cc-v20)
+  - [Install](#install)
+    - [System configuration](#system-configuration)
+      - [CUDA, CUDNN, TensorRT](#cuda-cudnn-tensorrt)
+    - [Clone this repository](#clone-this-repository)
+    - [Configuration](#configuration)
+    - [Build and install](#build-and-install)
+    - [Free disk space (Optional)](#free-disk-space-optional)
+  - [Usage](#usage)
+  - [Docker](#docker)
+  - [Some final notes and some tested working configurations](#some-final-notes-and-some-tested-working-configurations)
+  - [Credits](#credits)
 
-## Docker
+<!-- /TOC -->
 
-If you wish to start using this project right away, fetch a prebuilt image on [Docker Hub](https://hub.docker.com/r/floopcz/tensorflow_cc/)!
+This project allows to build and easily access (via cmake) the [TensorFlow C++](https://www.tensorflow.org/api_docs/cc/) API. In particular, after having built and deployed your new `tensor_cc` library, you won't need [Bazel](https://bazel.build/) build system anymore (if you wish).
 
-Running the image on CPU:
+This project started as a fork of the repository https://github.com/FloopCZ/tensorflow_cc. After having hit and solved many build and deployment issues (especially with newer tensorflow configurations), I am sharing the updated and improved version of the scripts I obtained.  
+
+This repository contains two CMake projects. 
+- The [tensorflow_cc](./tensorflow_cc/README.md) project that downloads, builds and installs the TensorFlow C++ API into the operating system. 
+- The [example](./example/README.md) project that demonstrates its simple usage.
+
+## Install 
+
+The following procedure has been tested under **Ubuntu 20.04**. 
+
+### System configuration 
+
+**IMPORTANT**: before starting the install process, you need to check the [tensorflow GPU compatibility table](https://www.tensorflow.org/install/source#gpu). Select your preferred configuration from the tested ones reported in the table.
+- With CPU: https://www.tensorflow.org/install/source#cpu
+- With GPU: https://www.tensorflow.org/install/source#gpu
+
+My **current preferred working configuration** under Ubuntu 20.04:
+- **C++**: 17
+- **TENSORFLOW_VERSION**: 2.9.0 
+- **BAZEL_VERSION**: 5.1.1
+- **CUDA**: 11.6 
+- **CUDNN**: 8.6.0.163-1+cuda11.8   
+     - `sudo apt install -y libcudnn8=8.6.0.163-1+cuda11.8`
+    - `sudo apt install -y libcudnn8-dev=8.6.0.163-1+cuda11.8`
+  
+I successfully built and deployed other **newer tensorflow configurations**. However, note that tensorflow does download and use its own custom versions of `Eigen` (and of other base libraries, according to the selected tensorflow version) and these library versions may not be the same installed in your system. This fact may cause severe problems (undefined behaviors and uncontrolled crashes) in your final target projects (where you want to import the built and deployed Tensorflow C++): In fact, you may be mixing libraries built with different versions of `Eigen` (so with different data alignments)!  
+
+#### CUDA, CUDNN, TensorRT 
+
+If you want to allow `tensorflow_cc` to use your GPU, start by checking you have properly installed `CUDA`, `CUDNN`, `TensorRT` 
+
+* `CUDA`: https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html
+* `cudnn`: https://docs.nvidia.com/deeplearning/cudnn/latest/installation/linux.html    
+* `TensorRT`: https://docs.nvidia.com/deeplearning/tensorrt/install-guide/index.html  
+  
+
+### Clone this repository
+
 ```bash
-docker run -it floopcz/tensorflow_cc:ubuntu /bin/bash
-```
-
-If you also want to utilize your NVIDIA GPU, install [NVIDIA Docker](https://github.com/NVIDIA/nvidia-docker) and run:
-```bash
-docker run --gpus all -it floopcz/tensorflow_cc:ubuntu-cuda /bin/bash
-```
-
-The list of available images:
-
-| Image name                                    | Description                                         |
-| ---                                           | ---                                                 |
-| `floopcz/tensorflow_cc:ubuntu`                | Ubuntu build of `tensorflow_cc`                     |
-| `floopcz/tensorflow_cc:ubuntu-cuda`           | Ubuntu build of `tensorflow_cc` + NVIDIA CUDA       |
-| `floopcz/tensorflow_cc:archlinux`             | Arch Linux build of `tensorflow_cc`                 |
-| `floopcz/tensorflow_cc:archlinux-cuda`        | Arch Linux build of `tensorflow_cc` + NVIDIA CUDA   |
-
-To build one of the images yourself, e.g. `ubuntu`, run:
-```bash
-docker build -t floopcz/tensorflow_cc:ubuntu -f Dockerfiles/ubuntu .
-```
-
-## Installation
-
-#### 1) Install requirements
-
-##### Ubuntu 18.04:
-Install repository requirements:
-```
-sudo apt-get install cmake curl g++-7 git python3-dev python3-numpy sudo wget
-```
-
-Set up Python 3 to be the default Python:
-```
-update-alternatives --install /usr/bin/python python /usr/bin/python3 1
-```
-
-In order to build the TensorFlow itself, the build procedure also requires [Bazel](https://bazel.build/):
-```
-curl -fsSL https://bazel.build/bazel-release.pub.gpg | gpg --dearmor > bazel.gpg
-sudo mv bazel.gpg /etc/apt/trusted.gpg.d/
-echo "deb [arch=amd64] https://storage.googleapis.com/bazel-apt stable jdk1.8" | sudo tee /etc/apt/sources.list.d/bazel.list
-sudo apt-get update && sudo apt-get install bazel
-```
-
-If you require GPU support on Ubuntu, please also install NVIDIA CUDA Toolkit (>=11.1), NVIDIA drivers, cuDNN, and `cuda-command-line-tools` package.
-The build procedure will automatically detect CUDA if it is installed in `/opt/cuda` or `/usr/local/cuda` directories.
-
-##### Arch Linux:
-```
-sudo pacman -S base-devel bazel cmake git python python-numpy wget
-```
-
-For GPU support on Arch, also install the following:
-
-```
-sudo pacman -S cuda cudnn nvidia
-```
-
-**Warning:** Newer versions of TensorFlow sometimes fail to build with the latest version of Bazel. You may wish
-to install an older version of Bazel (e.g., 5.1.1).
-
-**Warning:** If your program uses Protobuf and you encounter linkage or other problems, you can
-try `-DINSTALL_PROTOBUF=ON` option to install a Protobuf version matching the version bundled with TensorFlow.
-Our Dockerfiles are already built with the right version of Protobuf, so you may want to try
-your program in the Dockerfile first.
-
-#### 2) Clone this repository
-```
 git clone https://github.com/FloopCZ/tensorflow_cc.git
 cd tensorflow_cc
 ```
 
-#### 3) Build and install the library
+### Configuration
 
+Check the [tensorflow GPU compatibility table](https://www.tensorflow.org/install/source#gpu) and
+1. Set your preferred `CUDA` version in the script `build.sh`
+2. Set your target `tensorflow` and `bazel` versions in the following files (in the root folder):
+   * `BAZEL_VERSION ` 
+   * `TENSORFLOW_VERSION` 
+
+
+### Build and install 
+
+Once you have properly set the configuration files, run
 ```
-cd tensorflow_cc
-mkdir build && cd build
-cmake ..
-make
-sudo make install
-sudo ldconfig
+$ ./build.sh 
 ```
 
-**Warning:** Optimizations for Intel CPU generation `>=haswell` are enabled by default. If you have a
-processor that is older than `haswell` generation, you may wish to run `export CC_OPT_FLAGS="-march=native"`
+**Warning:** Optimizations for Intel CPU are obtained by running `export CC_OPT_FLAGS="-march=native"`
 before the build. This command provides the best possible optimizations for your current CPU generation, but
-it may cause the built library to be incompatible with older generations.
+it may cause the built library to be incompatible with other machines (if you want to deploy it elsewhere).
 
 **Warning:** In low-memory or many-cpu environments, the bazel scheduler can miss the resource consumption
 estimates and the build may be terminated by the out-of-memory killer.
 If that is your case, consider adding resource limit parameters to CMake, e.g.,
 `cmake -DLOCAL_RAM_RESOURCES=2048 -DLOCAL_CPU_RESOURCES=4 ..`
 
-#### 4) (Optional) Free disk space
+### Free disk space (Optional) 
 
-```
+After you have build and deployed your Tensorflow C++ library, you may want to clean up the build artifacts. 
+```bash
 # cleanup bazel build directory
 rm -rf ~/.cache
 # remove the build folder
@@ -117,51 +99,30 @@ cd .. && rm -rf build
 
 ## Usage
 
-#### 1) Write your C++ code:
-```C++
-// example.cpp
+The [example](./example/README.md) project demonstrates the simple usage of `tensorflow_cc`.
 
-#include <tensorflow/core/platform/env.h>
-#include <tensorflow/core/public/session.h>
-#include <iostream>
-using namespace std;
-using namespace tensorflow;
-
-int main()
-{
-    Session* session;
-    Status status = NewSession(SessionOptions(), &session);
-    if (!status.ok()) {
-        cout << status.ToString() << "\n";
-        return 1;
-    }
-    cout << "Session successfully created.\n";
-}
+In order to build and run the example program:
 ```
-
-#### 2) Link TensorflowCC to your program using CMake
-```CMake
-# CMakeLists.txt
-
-find_package(TensorflowCC REQUIRED)
-add_executable(example example.cpp)
-
-# Link the Tensorflow library.
-target_link_libraries(example TensorflowCC::TensorflowCC)
-
-# You may also link cuda if it is available.
-# find_package(CUDA)
-# if(CUDA_FOUND)
-#   target_link_libraries(example ${CUDA_LIBRARIES})
-# endif()
-```
-
-#### 3) Build and run your program
-```
+cd example
 mkdir build && cd build
 cmake .. && make
 ./example 
 ```
 
-If you are still unsure, consult the Dockerfiles for
-[Ubuntu](Dockerfiles/ubuntu) and [Arch Linux](Dockerfiles/archlinux).
+## Docker
+
+At present, I didn't test the new scripts under docker yet. If you wish, you may want to take a look at this [repo](https://github.com/FloopCZ/tensorflow_cc) and its docker image shared under Docker hub.
+
+## Some final notes and some tested working configurations
+
+With respect to the original repo, I had to remove the bazel option `--config=monolithic` since it brings some [troubles](https://github.com/tensorflow/tensorflow/issues/59081). In particular, I removed this option from the file `tensorflow_cc/cmake/build_tensorflow.sh.in`, which is used by cmake to generate the final configure and build script `tensorflow_cc/build/build_tensorflow.sh`. 
+
+Some other tested **working tensorflow configurations**: 
+  * tensorflow 2.13.0, bazel 5.3.0, cudnn 8.6.0
+  * tensorflow 2.14.0, bazel 6.1.0, cuda 8.9.7
+
+
+
+## Credits 
+
+Thanks to FlooCZ for his initial version of the tensorflow_cc [repo](https://github.com/FloopCZ/tensorflow_cc).
