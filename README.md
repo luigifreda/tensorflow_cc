@@ -21,7 +21,7 @@ Maintainer: [Luigi Freda](https://www.luigifreda.com)
 
 This project allows to build and easily access (via cmake) the [TensorFlow C++](https://www.tensorflow.org/api_docs/cc/) API. In particular, after having built and deployed your new `tensor_cc` library, you won't need [Bazel](https://bazel.build/) build system anymore (if you wish).
 
-This project started as a fork of the repository https://github.com/FloopCZ/tensorflow_cc. After having hit and solved many build and deployment issues (especially with newer tensorflow configurations), I am sharing the updated and improved version of the scripts I obtained.  
+This project started as a fork of the repository https://github.com/FloopCZ/tensorflow_cc. After having hit and solved some build and deployment issues (especially with newer tensorflow configurations), I am sharing the updated and improved version of the scripts I obtained.  
 
 This repository contains two CMake projects. 
 - The [tensorflow_cc](./tensorflow_cc/README.md) project that downloads, builds and installs the TensorFlow C++ API into the operating system. 
