@@ -1,5 +1,12 @@
 # tensorflow_cc v2.0
 
+<p align="left">
+<img src="images/tensorflow-icon.png"
+alt="tensorflow" height="50" border="1"/> 
+<img src="images/cpp_icon.png"
+alt="c++" height="50" border="1"/> 
+</p>
+
 Maintainer: [Luigi Freda](https://www.luigifreda.com)
 
 <!-- TOC -->
@@ -7,7 +14,7 @@ Maintainer: [Luigi Freda](https://www.luigifreda.com)
 - [tensorflow\_cc v2.0](#tensorflow_cc-v20)
   - [Install](#install)
     - [System configuration](#system-configuration)
-      - [CUDA, CUDNN, TensorRT](#cuda-cudnn-tensorrt)
+      - [Install CUDA, CUDNN, TensorRT](#install-cuda-cudnn-tensorrt)
     - [Clone this repository](#clone-this-repository)
     - [Configuration](#configuration)
     - [Build and install](#build-and-install)
@@ -27,6 +34,8 @@ This repository contains two CMake projects.
 - The [tensorflow_cc](./tensorflow_cc/README.md) project that downloads, builds and installs the TensorFlow C++ API into the operating system. 
 - The [example](./example/README.md) project that demonstrates its simple usage.
 
+--- 
+
 ## Install 
 
 The following procedure has been tested under **Ubuntu 20.04**. 
@@ -37,7 +46,7 @@ The following procedure has been tested under **Ubuntu 20.04**.
 - With CPU: https://www.tensorflow.org/install/source#cpu
 - With GPU: https://www.tensorflow.org/install/source#gpu
 
-My **current preferred working configuration** under Ubuntu 20.04:
+My **current preferred working configuration** (default one) under Ubuntu 20.04:
 - **C++**: 17
 - **TENSORFLOW_VERSION**: 2.9.0 
 - **BAZEL_VERSION**: 5.1.1
@@ -48,9 +57,9 @@ My **current preferred working configuration** under Ubuntu 20.04:
   
 I successfully built/deployed/tested other **newer tensorflow configurations** by using the new updated scripts/configurations (see the list below).
 
-#### CUDA, CUDNN, TensorRT 
+#### Install CUDA, CUDNN, TensorRT 
 
-If you want to allow `tensorflow_cc` to use your GPU, start by checking you have properly installed `CUDA`, `CUDNN`, `TensorRT` 
+If you want to allow `tensorflow_cc` to use your GPU, start by checking you have properly installed the `CUDA`, `CUDNN`, `TensorRT` versions of the target configuration you selected in the [table](https://www.tensorflow.org/install/source#gpu).
 
 * `CUDA`: https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html
 * `cudnn`: https://docs.nvidia.com/deeplearning/cudnn/latest/installation/linux.html    
@@ -60,22 +69,23 @@ If you want to allow `tensorflow_cc` to use your GPU, start by checking you have
 ### Clone this repository
 
 ```bash
-git clone https://github.com/FloopCZ/tensorflow_cc.git
+git clone https://github.com/luigifreda/tensorflow_cc.git
 cd tensorflow_cc
 ```
 
 ### Configuration
 
-Check the [tensorflow GPU compatibility table](https://www.tensorflow.org/install/source#gpu) and
-1. Set your preferred `CUDA` version in the script `build.sh`
-2. Set your target `tensorflow` and `bazel` versions in the following files (in the root folder):
+Check the [tensorflow GPU compatibility table](https://www.tensorflow.org/install/source#gpu), select your preferred configuration from the tested ones, and then accordingly
+1. Set your installed `CUDA` version in the script `build.sh`.
+2. Set the target `tensorflow` and `bazel` versions in the following files (in the root folder):
    * `BAZEL_VERSION ` 
-   * `TENSORFLOW_VERSION` 
+   * `TENSORFLOW_VERSION`
+3. Set your target `INSTALL_PATH` in `build.sh`.
 
 
 ### Build and install 
 
-Once you have properly set the configuration files, run
+Once you have properly set the build configuration, run
 ```
 $ ./build.sh 
 ```
@@ -101,6 +111,8 @@ rm -rf ~/.cache
 cd .. && rm -rf build
 ```
 
+--- 
+
 ## Usage
 
 The [example](./example/README.md) project demonstrates the simple usage of `tensorflow_cc`.
@@ -113,13 +125,17 @@ cmake .. && make
 ./example 
 ```
 
+--- 
+
 ## Docker
 
 At present, I didn't test the new scripts under docker yet. If you wish, you may want to take a look at this [repo](https://github.com/FloopCZ/tensorflow_cc) and its docker image shared under Docker hub.
 
+--- 
+
 ## Some final notes and some tested working configurations
 
-With respect to the original repo, I had to remove the bazel option `--config=monolithic` since it brings some [troubles](https://github.com/tensorflow/tensorflow/issues/59081). In particular, I removed this option from the file `tensorflow_cc/cmake/build_tensorflow.sh.in`, which is used by cmake to generate the final configure and build script `tensorflow_cc/build/build_tensorflow.sh`. 
+With respect to the original repo, one of the most important changes is the removal of the bazel option `--config=monolithic` since it brings some [troubles](https://github.com/tensorflow/tensorflow/issues/59081). In particular, I removed this option from the file `tensorflow_cc/cmake/build_tensorflow.sh.in`, which is used by cmake to generate the final configure and build script `tensorflow_cc/build/build_tensorflow.sh`. 
 
 I successfully built and deployed other **newer tensorflow configurations** (see the list below). However, note that tensorflow does download and use its own custom versions of `Eigen` (and of other base libraries, according to the selected tensorflow version) and these library versions may not be the same installed in your system. This fact may cause severe problems (undefined behaviors and uncontrolled crashes) in your final target projects (where you want to import the built and deployed Tensorflow C++): In fact, you may be mixing libraries built with different versions of `Eigen` (so with different data alignments)!  
 Some tested **working tensorflow configurations**: 
@@ -127,6 +143,7 @@ Some tested **working tensorflow configurations**:
   * tensorflow 2.13.0, bazel 5.3.0, cudnn 8.6.0, cuda 11.8
   * tensorflow 2.14.0, bazel 6.1.0, cuda 8.9.7, cuda 11.8
 
+--- 
 
 ## Credits 
 
