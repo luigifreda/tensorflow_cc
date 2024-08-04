@@ -10,6 +10,7 @@ ExternalProject_Add(
   SOURCE_DIR "tensorflow"
   BUILD_IN_SOURCE 1
   UPDATE_COMMAND ""
+  PATCH_COMMAND ${CMAKE_CURRENT_BINARY_DIR}/../replace_string.py "-std=c++14" "-std=c++17" ${CMAKE_CURRENT_BINARY_DIR}/tensorflow/.bazelrc
   CONFIGURE_COMMAND ""
   BUILD_COMMAND echo "*" > "${CMAKE_CURRENT_BINARY_DIR}/tensorflow/.bazelversion"
         COMMAND "${CMAKE_CURRENT_BINARY_DIR}/build_tensorflow.sh"

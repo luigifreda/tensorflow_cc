@@ -6,10 +6,10 @@ project("tensorflow_cc" VERSION ${version})
 option(ALLOW_CUDA "Try to find and use CUDA." ON)
 option(REQUIRE_CUDA "Make sure to find and use CUDA (implies ALLOW_CUDA)." ON)
 set(LOCAL_RAM_RESOURCES 4096 CACHE STRING "The amount of local RAM resources passed to bazel scheduler (e.g., 4096).")
-set(LOCAL_CPU_RESOURCES HOST_CPUS CACHE STRING "The amount of local CPU cores passed to bazel scheduler (e.g., 2).")
+set(LOCAL_CPU_RESOURCES 10 CACHE STRING "The amount of local CPU cores passed to bazel scheduler (e.g., 2).")
 set(TENSORFLOW_TAG "v${version}" CACHE STRING "The tensorflow release tag to be checked out (default v${version}).")
 option(INSTALL_PROTOBUF "Install protobuf compatible with tensorflow version." OFF)
-set(CMAKE_CXX_STANDARD 14 CACHE STRING "The C++ standard for building and linking the library (e.g., 14).")
+set(CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard for building and linking the library (e.g., 14).")
 
 # -------------
 # CMake Options
@@ -55,7 +55,7 @@ target_include_directories(
 target_link_libraries(
   tensorflow_cc INTERFACE
   "${CMAKE_INSTALL_PREFIX}/lib/libtensorflow_cc.so.${PROJECT_VERSION_MAJOR}"
-  #"${CMAKE_INSTALL_PREFIX}/lib/libtensorflow_framework.so.${PROJECT_VERSION_MAJOR}"  
+  "${CMAKE_INSTALL_PREFIX}/lib/libtensorflow_framework.so.${PROJECT_VERSION_MAJOR}"  
   dl pthread
 )
 
@@ -99,16 +99,16 @@ install(
   FILES_MATCHING PATTERN "libtensorflow_cc.so*"
 )
 
-# install(
-#   DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/tensorflow/bazel-bin/tensorflow/"
-#   DESTINATION lib
-#   FILES_MATCHING PATTERN "libtensorflow_framework.so*"
-# )
-# install(
-#   DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/tensorflow/bazel-bin/bin/tensorflow/"
-#   DESTINATION lib
-#   FILES_MATCHING PATTERN "libtensorflow_framework.so*"
-# )
+install(
+  DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/tensorflow/bazel-bin/tensorflow/"
+  DESTINATION lib
+  FILES_MATCHING PATTERN "libtensorflow_framework.so*"
+)
+install(
+  DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/tensorflow/bazel-bin/bin/tensorflow/"
+  DESTINATION lib
+  FILES_MATCHING PATTERN "libtensorflow_framework.so*"
+)
 
 # --------------------------
 # Install CMake targets file
